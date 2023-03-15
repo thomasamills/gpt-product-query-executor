@@ -7,10 +7,6 @@ import (
 	gpt35 "github.com/AlmazDelDiablo/gpt3-5-turbo-go"
 )
 
-const (
-	OpenAIKey = "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"
-)
-
 type ChatGptClient interface {
 	SendPrompt(
 		sku string,
@@ -28,9 +24,9 @@ type ChatGptClientImpl struct {
 	db          db.GptProductDatabase
 }
 
-func NewChatGptClient(db db.GptProductDatabase) ChatGptClient {
+func NewChatGptClient(db db.GptProductDatabase, apiKey string) ChatGptClient {
 	return &ChatGptClientImpl{
-		gpt35Client: gpt35.NewClient(OpenAIKey),
+		gpt35Client: gpt35.NewClient(apiKey),
 		db:          db,
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"chat-gpt-product-spec/data_read"
 	"chat-gpt-product-spec/db"
 	"fmt"
+	"os"
 )
 
 func firstN(s string, n int) string {
@@ -13,12 +14,14 @@ func firstN(s string, n int) string {
 	}
 	return s
 }
+
 func main() {
 	db := db.NewGptProductDatabase()
-	gptClient := chat_cpt_client.NewChatGptClient(db)
+	gptClient := chat_cpt_client.NewChatGptClient(db, os.Args[2])
 	dataParser := data_read.NewCsvParser()
 	pdfExtractor := data_read.NewPdfExtractor()
-	data := dataParser.Parse("./Allproducts-latest.csv")
+	fmt.Println(os.Args[1])
+	data := dataParser.Parse(os.Args[1])
 	for i, dataItem := range data {
 		if i == 0 {
 			continue
