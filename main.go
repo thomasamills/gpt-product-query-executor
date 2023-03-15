@@ -8,13 +8,6 @@ import (
 	"os"
 )
 
-func firstN(s string, n int) string {
-	if len(s) > n {
-		return s[:n]
-	}
-	return s
-}
-
 func main() {
 	db := db.NewGptProductDatabase()
 	gptClient := chat_cpt_client.NewChatGptClient(db, os.Args[2])
@@ -44,13 +37,13 @@ func main() {
 			if err != nil {
 				fmt.Println("could not extract data from pdf")
 			}
-			dataText = firstN(text, 3800)
+			dataText = text
 		} else if len(dataItem.CataloguePage) > 0 {
 			text, err := pdfExtractor.Extract(dataItem.CataloguePage, dataItem.Sku+"cat")
 			if err != nil {
 				fmt.Println("could not extract data from pdf")
 			}
-			catText = firstN(text, 3800)
+			catText = text
 		}
 		err = gptClient.SendPrompt(
 			dataItem.Sku,
