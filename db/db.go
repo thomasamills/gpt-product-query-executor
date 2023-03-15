@@ -16,6 +16,10 @@ type GptProductDatabase interface {
 		output string,
 		upperTx *gorm.DB,
 	) error
+	DoesProductSpecExist(
+		sku string,
+		upperTx *gorm.DB,
+	) (bool, error)
 }
 type GptProductDatabaseImpl struct {
 	mainDb *gorm.DB
@@ -62,7 +66,7 @@ func (g *GptProductDatabaseImpl) CreateProductSpec(
 	output string,
 	upperTx *gorm.DB,
 ) error {
-	createPrompt := func(tx *gorm.DB) error {
+	createProductSpec := func(tx *gorm.DB) error {
 		p := &ProductSpec{
 			Sku:       sku,
 			Query:     query,
@@ -83,10 +87,10 @@ func (g *GptProductDatabaseImpl) CreateProductSpec(
 	}
 	var err error
 	if upperTx != nil {
-		err = createPrompt(upperTx)
+		err = createProductSpec(upperTx)
 	} else {
 		err = g.mainDb.Transaction(func(tx *gorm.DB) error {
-			err = createPrompt(tx)
+			err = createProductSpec(tx)
 			if err != nil {
 				tx.Rollback()
 				return err
@@ -98,4 +102,43 @@ func (g *GptProductDatabaseImpl) CreateProductSpec(
 		return err
 	}
 	return nil
+}
+
+func (g *GptProductDatabaseImpl) DoesProductSpecExist(
+	sku string,
+	upperTx *gorm.DB,
+) (bool, error) {
+	result := &ProductSpec{}
+	getPrompt := func(tx *gorm.DB) error {
+		err := tx.
+			Where("sku = ?", sku).
+			First(&result).
+			Error
+		if err != nil {
+			if err != gorm.ErrRecordNotFound {
+				return err
+			}
+		}
+		return nil
+	}
+	var err error
+	if upperTx != nil {
+		err = getPrompt(upperTx)
+	} else {
+		err = g.mainDb.Transaction(func(tx *gorm.DB) error {
+			err = getPrompt(tx)
+			if err != nil {
+				tx.Rollback()
+				return nil
+			}
+
+			return nil
+		})
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	return result != nil, nil
 }

@@ -26,6 +26,16 @@ func main() {
 		if i == 0 {
 			continue
 		}
+		// checking if its already been processed
+		exists, err := db.DoesProductSpecExist(dataItem.Sku, nil)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		if exists {
+			fmt.Println("Skipping item " + dataItem.Sku + " as it has already been processed")
+			continue
+		}
 		fmt.Println("Processing item " + dataItem.Sku)
 		dataText := ""
 		catText := ""
@@ -42,7 +52,7 @@ func main() {
 			}
 			catText = firstN(text, 3800)
 		}
-		err := gptClient.SendPrompt(
+		err = gptClient.SendPrompt(
 			dataItem.Sku,
 			dataItem.Query,
 			dataItem.MasterTradeURL,
