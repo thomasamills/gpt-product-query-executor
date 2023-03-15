@@ -1,0 +1,3 @@
+export OPEN_AI_KEY = ""
+export MQSQL_CONNECTION_STRING = ""
+export CSV_ABSOLUTE_PATH = ""

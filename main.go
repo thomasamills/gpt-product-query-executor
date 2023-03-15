@@ -8,13 +8,19 @@ import (
 	"os"
 )
 
+const (
+	AIKey      = "OPEN_AI_KEY"
+	CsvPath    = "CSV_ABSOLUTE_PATH"
+	SqlConnect = "MQSQL_CONNECTION_STRING"
+)
+
 func main() {
-	db := db.NewGptProductDatabase()
-	gptClient := chat_cpt_client.NewChatGptClient(db, os.Args[2])
+	db := db.NewGptProductDatabase(os.Getenv(SqlConnect))
+	gptClient := chat_cpt_client.NewChatGptClient(db, os.Getenv(AIKey))
 	dataParser := data_read.NewCsvParser()
 	pdfExtractor := data_read.NewPdfExtractor()
 	fmt.Println(os.Args[1])
-	data := dataParser.Parse(os.Args[1])
+	data := dataParser.Parse(os.Getenv(CsvPath))
 	for i, dataItem := range data {
 		if i == 0 {
 			continue
