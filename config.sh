@@ -1,7 +1,0 @@
-export OPEN_AI_KEY="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"
-export CSV_ABSOLUTE_PATH="/data/wwwroot/www.mastertradeportal.co.uk/gpt-product-query-executor-master/gpt-product-query-executor-master/Allproducts-latest.csv"
-export MYSQL_USERNAME=""
-export MYSQL_PASSWORD=""
-export MYSQL_DBNAME=""
-export MYSQL_HOST=""
-export MYSQL_PORT=""

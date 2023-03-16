@@ -13,19 +13,12 @@ const (
 )
 
 func main() {
-	sqlConf := db.MySQLConnectionConfig{
-		User:     os.Getenv("MYSQL_USERNAME"),
-		Password: os.Getenv("MYSQL_PASSWORD"),
-		Host:     os.Getenv("MYSQL_HOST"),
-		Port:     os.Getenv("MYSQL_PORT"),
-		DbName:   os.Getenv("MYSQL_DBNAME"),
-	}
-	db := db.NewGptProductDatabase(sqlConf)
-	gptClient := chat_cpt_client.NewChatGptClient(db, "OPEN_AI_KEY")
+	db := db.NewGptProductDatabase()
+	gptClient := chat_cpt_client.NewChatGptClient(db, os.Args[2])
 	dataParser := data_read.NewCsvParser()
 	pdfExtractor := data_read.NewPdfExtractor()
 	fmt.Println(os.Args[1])
-	data := dataParser.Parse("CSV_ABSOLUTE_PATH")
+	data := dataParser.Parse(os.Args[1])
 	for i, dataItem := range data {
 		if i == 0 {
 			continue

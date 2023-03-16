@@ -7,7 +7,7 @@ import (
 )
 
 type GptProductDatabase interface {
-	Init(conf MySQLConnectionConfig) error
+	Init() error
 	CreateProductSpec(
 		sku string,
 		query string,
@@ -26,9 +26,9 @@ type GptProductDatabaseImpl struct {
 	mainDb *gorm.DB
 }
 
-func NewGptProductDatabase(config MySQLConnectionConfig) GptProductDatabase {
+func NewGptProductDatabase() GptProductDatabase {
 	db := &GptProductDatabaseImpl{}
-	err := db.Init(config)
+	err := db.Init()
 	if err != nil {
 		panic(err)
 	}
@@ -52,15 +52,16 @@ type MySQLConnectionConfig struct {
 	DbName   string
 }
 
-func (g *GptProductDatabaseImpl) Init(conf MySQLConnectionConfig) error {
-	db, err := gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
-		conf.User,
-		conf.Password,
-		conf.Host,
-		conf.Port,
-		conf.DbName),
-	), &gorm.Config{},
+func (g *GptProductDatabaseImpl) Init() error {
+	connectionString := fmt.Sprintf("%s:%s@(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
+		"user",
+		"password",
+		"host",
+		"port",
+		"dbname",
 	)
+	fmt.Println(connectionString)
+	db, err := gorm.Open(mysql.Open(connectionString))
 	if err != nil {
 		return err
 	}
